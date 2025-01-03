@@ -1,7 +1,9 @@
+import LoginPage from "./pages/LoginPage.tsx";
+
 function App() {
   return (
     <>
-        Hello World
+        <LoginPage></LoginPage>
     </>
   )
 }
