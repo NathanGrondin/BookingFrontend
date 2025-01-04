@@ -1,10 +1,15 @@
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import LoginPage from "./pages/LoginPage.tsx";
+import SignupPage from "./pages/SignupPage.tsx";
 
-function App() {
+const App: React.FC = () => {
   return (
-    <>
-        <LoginPage></LoginPage>
-    </>
+    <Router>
+        <Routes>
+            <Route path="/" element={<LoginPage/>} />
+            <Route path="/signup" element={<SignupPage/>} />
+        </Routes>
+    </Router>
   )
 }
 
