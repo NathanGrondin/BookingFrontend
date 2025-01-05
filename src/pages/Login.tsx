@@ -3,7 +3,7 @@ import { useState, FormEvent } from 'react';
 import {Button, Col, Container, Form, Row} from 'react-bootstrap';
 import {Link} from "react-router-dom";
 
-const LoginPage: React.FC = () => {
+const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
@@ -67,4 +67,4 @@ const LoginPage: React.FC = () => {
         </div>
     );
 };
-export default LoginPage;
+export default Login;
