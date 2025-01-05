@@ -4,7 +4,7 @@ import {Button, Container, Form, Row, Alert} from 'react-bootstrap';
 import {signupUser, User} from "../services/usersService.ts";
 import { useNavigate } from 'react-router-dom';
 
-const SignupPage: React.FC = () => {
+const Signup: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
@@ -111,4 +111,4 @@ const SignupPage: React.FC = () => {
         </div>
     );
 };
-export default SignupPage;
+export default Signup;
