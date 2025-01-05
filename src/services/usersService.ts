@@ -10,7 +10,11 @@ export interface User {
 
 }
 
-export const signupUser = async (userSigningUp: User): Promise<void> => {
-    await axios.post(`${API_URL}/users/addUser`, userSigningUp)
+export interface AxiosResponse {
+    status: number;
+}
+
+export const signupUser = async (userSigningUp: User): Promise<AxiosResponse> => {
+    return axios.post(`${API_URL}/users/addUser`, userSigningUp);
 
 };

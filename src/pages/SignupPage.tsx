@@ -43,10 +43,13 @@ const SignupPage: React.FC = () => {
             }
 
             setSuccess(true);
-            setTimeout(() => {
-                navigate('/');
-            }, 1000);
-            await signupUser(userSigningUp)
+            const response = await signupUser(userSigningUp)
+
+            if (response.status == 200) {
+                setTimeout(() => {
+                    navigate('/');
+                }, 1000);
+            }
         }
 
     }
