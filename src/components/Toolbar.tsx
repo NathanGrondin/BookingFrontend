@@ -1,17 +1,9 @@
 import { Container, Nav, Navbar} from 'react-bootstrap';
-import {useCallback} from "react";
-import {useNavigate} from "react-router-dom";
 import {useAuth} from "../context/useAuth.tsx";
 
 function Toolbar (){
 
-    const navigate = useNavigate();
-    const {authenticated, username} = useAuth();
-
-    const handleLogout = useCallback(()  => {
-        localStorage.removeItem('jwt');
-        navigate("/")
-    }, [navigate]);
+    const {authenticated, handleLogout, auth} = useAuth();
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg">
@@ -21,7 +13,7 @@ function Toolbar (){
                     <Nav>
                         {authenticated ? (
                             <>
-                                <Nav.Link href="/members">Welcome {username}</Nav.Link>
+                                <Nav.Link href="/members">Welcome {auth?.username}</Nav.Link>
                                 <Nav.Link onClick={handleLogout}>Sign Out</Nav.Link>
                             </>
                         ) : (

@@ -1,26 +1,23 @@
-import {useMemo} from 'react';
+import {useCallback, useMemo} from 'react';
+import { useLocalStorage } from 'usehooks-ts'
+import {Auth} from "../types/types.ts";
+import {isTokenValid} from "./jwtFunctions.ts";
 
-export interface AuthProps {
-    authenticated: boolean,
-    username: string,
-}
+export const useAuth = ()  => {
 
-export const useAuth = () : AuthProps  => {
+    const [auth, setAuth, removeAuth] = useLocalStorage<Auth | undefined>('auth', undefined)
 
     const authenticated : boolean = useMemo(() => {
-        return Boolean(localStorage.getItem('jwt') || false)
+        if (!auth) {
+            return false
+        }
+        return isTokenValid(auth.token)
+    }, [auth]);
+
+    const handleLogout = useCallback(()  => {
+        removeAuth()
     }, []);
 
-    const username : string = useMemo(() => {
-        try {
-            const user = JSON.parse(localStorage.getItem('user') || "")
-            return user.username
-        }
-        catch {
-            return ""
-        }
-    }, [])
-
-    return {authenticated, username}
+    return {setAuth, authenticated, auth, handleLogout}
 };
 

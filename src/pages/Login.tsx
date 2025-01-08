@@ -3,7 +3,8 @@ import { useState, FormEvent } from 'react';
 import {Alert, Button, Col, Container, Form, Row} from 'react-bootstrap';
 import {Link, useNavigate} from "react-router-dom";
 import {signinUser} from "../services/usersService.ts";
-import {User} from "../types/types.ts"
+import {User, Auth} from "../types/types.ts"
+import {useAuth} from "../context/useAuth.tsx";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -12,6 +13,8 @@ const Login: React.FC = () => {
     const [success, setSuccess] = useState<boolean>(false);
     const navigate = useNavigate();
 
+    const {setAuth} = useAuth();
+
     const validateFormData = () => {
         if (!username || !password) {
             setError('All fields are required.');
@@ -19,8 +22,7 @@ const Login: React.FC = () => {
             return false;
 
         }
-
-        setError(null); // Clear the error message
+        setError(null);
         return true;
     }
 
@@ -36,10 +38,11 @@ const Login: React.FC = () => {
 
                 const response = await signinUser(userSigningIn);
                 const token = response.data.token
-                localStorage.setItem('jwt', token);
-                localStorage.setItem("user", JSON.stringify({
-                    username: username,
-                }))
+                const auth : Auth  = {
+                    token: token,
+                    username: username
+                }
+                setAuth(auth)
                 navigate('/members');
             }
 

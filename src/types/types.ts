@@ -19,3 +19,12 @@ export interface JWTData {
     role: string;
     userId: number;
 }
+
+export interface AuthProps {
+    authenticated: boolean,
+    username: string,
+}
+export interface Auth {
+    token: string;
+    username: string;
+}
