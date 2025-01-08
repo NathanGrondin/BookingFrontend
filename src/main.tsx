@@ -3,14 +3,16 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Container} from "react-bootstrap";
-import Toolbar from "./components/Toolbar.tsx";
+import {BrowserRouter} from "react-router-dom";
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-      <Container>
-          <Toolbar/>
-          <App/>
-      </Container>
 
-  </StrictMode>,
+    <BrowserRouter>
+        <StrictMode>
+            <Container>
+                <App/>
+            </Container>
+        </StrictMode>,
+    </BrowserRouter>
+
 )
