@@ -5,7 +5,6 @@ export interface User {
 
 }
 
-
 export interface LoginResponseData {
     token: string
 }

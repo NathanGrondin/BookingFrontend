@@ -45,7 +45,6 @@ const Signup: React.FC = () => {
 
 
             const response = await signupUser(userSigningUp)
-            console.log(response)
             if (response.status == 200) {
 
                 setSuccess(true);

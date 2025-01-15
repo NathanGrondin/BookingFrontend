@@ -2,7 +2,7 @@ import {jwtDecode} from 'jwt-decode';
 import {JWTData} from "../types/types.ts";
 
 export const decodeToken = (token: string | null): JWTData | null => {
-    if (!token) return null;
+    if (!token) throw new Error('missing token');
     try {
         return jwtDecode<JWTData>(token);
     } catch (error) {
