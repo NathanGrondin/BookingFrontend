@@ -17,8 +17,6 @@ const Login: React.FC = () => {
 
     const validateFormData = () => {
         if (!username || !password) {
-            setError('All fields are required.');
-            setSuccess(false);
             return false;
 
         }
@@ -28,29 +26,34 @@ const Login: React.FC = () => {
 
     const onSignIn = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (validateFormData()){
-            const userSigningIn : User = {
-                username:username,
-                password:password,
-                email:undefined
-            }
-            try{
-
-                const response = await signinUser(userSigningIn);
-                const token = response.data.token
-                const auth : Auth  = {
-                    token: token,
-                    username: username
-                }
-                setAuth(auth)
-                navigate('/members');
-            }
-
-            catch {
-                setError('Invalid username or password');
-                setSuccess(false);
-            }
+        if (!validateFormData()){
+            setError('All fields are required.');
+            setSuccess(false);
+            return
         }
+
+        const userSigningIn : User = {
+            username:username,
+            password:password,
+            email:undefined
+        }
+        try{
+
+            const response = await signinUser(userSigningIn);
+            const token = response.data.token
+            const auth : Auth  = {
+                token: token,
+                username: username
+            }
+            setAuth(auth)
+            navigate('/members');
+        }
+
+        catch {
+            setError('Invalid username or password');
+            setSuccess(false);
+        }
+
     }
     return (
         <div

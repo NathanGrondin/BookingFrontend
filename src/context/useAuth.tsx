@@ -8,10 +8,17 @@ export const useAuth = ()  => {
     const [auth, setAuth, removeAuth] = useLocalStorage<Auth | undefined>('auth', undefined)
 
     const authenticated : boolean = useMemo(() => {
-        if (!auth) {
+        try {
+            if (!auth) {
+                return false
+            }
+            return isTokenValid(auth.token)
+        }
+        catch (error) {
+            console.error(error)
             return false
         }
-        return isTokenValid(auth.token)
+
     }, [auth]);
 
     const handleLogout = useCallback(()  => {
