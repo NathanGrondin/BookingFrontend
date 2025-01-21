@@ -1,12 +1,12 @@
 import React from "react";
 import {Container} from "react-bootstrap";
 
-const Members: React.FC = () => {
+const Admin: React.FC = () => {
     return (
         <Container fluid={true}>
-            <h1>MEMBERS PAGE</h1>
+            <h1>ADMIN PAGE</h1>
         </Container>
     )
 }
 
-export default Members;
+export default Admin;
