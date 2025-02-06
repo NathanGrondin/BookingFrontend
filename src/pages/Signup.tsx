@@ -1,8 +1,9 @@
 import React from "react";
 import { useState, FormEvent } from 'react';
 import {Button, Container, Form, Row, Alert} from 'react-bootstrap';
-import {signupUser, User} from "../services/usersService.ts";
+import {signupUser} from "../services/usersService.ts";
 import { useNavigate } from 'react-router-dom';
+import {User} from "../types/types.ts"
 
 const Signup: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -42,10 +43,11 @@ const Signup: React.FC = () => {
                 email: email
             }
 
-            setSuccess(true);
-            const response = await signupUser(userSigningUp)
 
+            const response = await signupUser(userSigningUp)
             if (response.status == 200) {
+
+                setSuccess(true);
                 setTimeout(() => {
                     navigate('/');
                 }, 1000);

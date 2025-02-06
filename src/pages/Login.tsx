@@ -1,14 +1,59 @@
 import React from "react";
 import { useState, FormEvent } from 'react';
-import {Button, Col, Container, Form, Row} from 'react-bootstrap';
-import {Link} from "react-router-dom";
+import {Alert, Button, Col, Container, Form, Row} from 'react-bootstrap';
+import {Link, useNavigate} from "react-router-dom";
+import {signinUser} from "../services/usersService.ts";
+import {User, Auth} from "../types/types.ts"
+import {useAuth} from "../context/useAuth.tsx";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<boolean>(false);
+    const navigate = useNavigate();
+
+    const {setAuth} = useAuth();
+
+    const validateFormData = () => {
+        if (!username || !password) {
+            return false;
+
+        }
+        setError(null);
+        return true;
+    }
 
     const onSignIn = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!validateFormData()){
+            setError('All fields are required.');
+            setSuccess(false);
+            return
+        }
+
+        const userSigningIn : User = {
+            username:username,
+            password:password,
+            email:undefined
+        }
+        try{
+
+            const response = await signinUser(userSigningIn);
+            const token = response.data.token
+            const auth : Auth  = {
+                token: token,
+                username: username
+            }
+            setAuth(auth)
+            navigate('/members');
+        }
+
+        catch {
+            setError('Invalid username or password');
+            setSuccess(false);
+        }
+
     }
     return (
         <div
@@ -62,6 +107,21 @@ const Login: React.FC = () => {
                             </Link>
                         </div>
                     </Col>
+                </Row>
+                <Row>
+                    {/* Success Alert */}
+                    {success && (
+                        <Alert variant="success">
+                            Form submitted successfully!
+                        </Alert>
+                    )}
+
+                    {/* Error Alert */}
+                    {error && (
+                        <Alert variant="danger">
+                            {error}
+                        </Alert>
+                    )}
                 </Row>
             </Container>
         </div>
