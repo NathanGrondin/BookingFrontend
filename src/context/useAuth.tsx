@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react';
 import { useLocalStorage } from 'usehooks-ts'
-import {Auth} from "../types/types.ts";
-import {isTokenValid} from "./jwtFunctions.ts";
+import {Auth, JWTData} from "../types/types.ts";
+import {isTokenValid, decodeToken, hasRole} from "./jwtFunctions.ts";
 
 export const useAuth = ()  => {
 
@@ -21,10 +21,33 @@ export const useAuth = ()  => {
 
     }, [auth]);
 
+    const isAdmin : boolean = useMemo(() => {
+        try {
+            if (!auth) {
+                return false
+            }
+            return hasRole(auth.token, ['admin'])
+        }
+        catch (error) {
+            console.error(error)
+            return false
+        }
+
+    }, [auth])
+
     const handleLogout = useCallback(()  => {
         removeAuth()
     }, []);
 
-    return {setAuth, authenticated, auth, handleLogout}
+    const getTokenInfo = useCallback(() : JWTData => {
+        if (!auth || !auth.token) {
+            throw new Error('User is not authenticated')
+        }
+        return decodeToken(auth.token)
+    }, [auth])
+
+
+
+    return {setAuth, authenticated, auth, isAdmin, handleLogout, getTokenInfo}
 };
 

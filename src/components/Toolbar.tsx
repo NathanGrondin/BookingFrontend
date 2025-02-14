@@ -1,4 +1,4 @@
-import { Container, Nav, Navbar} from 'react-bootstrap';
+import {Nav, Navbar} from 'react-bootstrap';
 import {useAuth} from "../context/useAuth.tsx";
 
 function Toolbar (){
@@ -7,8 +7,7 @@ function Toolbar (){
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg">
-            <Container>
-                <Navbar.Brand href="/">Belle Shape</Navbar.Brand>
+                <Navbar.Brand className={"px-3"} href="/">Belle Shape</Navbar.Brand>
                 <Navbar.Collapse className="justify-content-end">
                     <Nav>
                         {authenticated ? (
@@ -21,7 +20,6 @@ function Toolbar (){
                         )}
                     </Nav>
                 </Navbar.Collapse>
-            </Container>
         </Navbar>
     );
 }
