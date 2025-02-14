@@ -19,11 +19,31 @@ export interface JWTData {
     userId: number;
 }
 
-export interface AuthProps {
-    authenticated: boolean,
-    username: string,
+export interface AxiosResponse {
+    status: number;
 }
+
 export interface Auth {
     token: string;
     username: string;
+}
+
+export interface Set {
+    id: number | undefined
+    userid: number
+    exerciseid: number
+    reps: number
+    weight: number
+    date: number
+}
+
+export interface UserExerciseSummary {
+    estimatedMax: number,
+    estimatedMaxDate: number,
+    sets: Set[],
+}
+
+export interface Exercise {
+    id: number | undefined,
+    name: string
 }
