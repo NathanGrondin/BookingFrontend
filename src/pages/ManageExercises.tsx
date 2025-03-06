@@ -81,7 +81,7 @@ const ManageExercises: React.FC = () => {
 
                     {success && (
                         <Alert variant="success">
-                            Lift was added successfully!
+                            Exercise was added successfully!
                         </Alert>
                     )}
 

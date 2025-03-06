@@ -1,11 +1,12 @@
 import React, {FormEvent, useEffect, useState} from "react";
-import {Alert, Button, Col, Container, Form, Modal, Row, Table} from "react-bootstrap";
+import {Alert, Button, Col, Container, Form, Modal, Row, Table, Card, Collapse} from "react-bootstrap";
 import {useAuth} from "../context/useAuth.tsx";
 import {Exercise, Set, UserExerciseSummary} from "../types/types.ts";
 import {
-    addSet, getUserExerciseSummary,
+    addSet, getUserExerciseSummary, calculateMax
 } from "../services/setsService.ts";
 import {getExercises} from "../services/exercisesServices.ts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 
 
@@ -20,16 +21,24 @@ const MyExercises: React.FC = () => {
     const [success, setSuccess] = useState<boolean>(false);
     const [exerciseSummary, setExerciseSummary] = useState<Record<string, UserExerciseSummary> | null>(null)
     const {getTokenInfo, auth} = useAuth();
+    const [openRow, setOpenRow] = useState<string | null>(null);
+
+    const toggleRow = (exerciseName: string) => {
+        setOpenRow(openRow === exerciseName ? null : exerciseName);
+    };
 
     useEffect(() => {
         if (!auth) {
             return
         }
 
+        console.log('fetching ...')
+
         const fetchExerciseSummary = async () => {
             try{
                 const response = await getUserExerciseSummary(getTokenInfo().userId)
                 const data = response.data as Record<string, UserExerciseSummary>
+                console.log(data)
                 setExerciseSummary(data)
 
             }
@@ -56,15 +65,28 @@ const MyExercises: React.FC = () => {
 
     }, [])
 
-    const addSetToState = (exerciseSummary: Record<string, UserExerciseSummary | null>, set: Set) => {
-        if (exerciseName['name'] in exerciseSummary) {
 
-            exerciseSummary[exerciseName['name']]['sets'].push(set)
+
+    const addSetToState = (exerciseSummary: Record<string, UserExerciseSummary | null>, set: Set) => {
+        set.estimatedMax = calculateMax(set)
+
+        if (exerciseName in exerciseSummary) {
+
+            exerciseSummary[exerciseName]['sets'].unshift(set)
+
+            if (set.estimatedMax > exerciseSummary[exerciseName]['estimatedMax']) {
+                exerciseSummary[exerciseName]['estimatedMax'] = set.estimatedMax
+                exerciseSummary[exerciseName]['estimatedMaxDate'] = set.date
+            }
             setExerciseSummary((exerciseSummary) => ({ ...exerciseSummary }));
         }
         else {
 
-            exerciseSummary[exerciseName['name']]['sets'] = [set]
+            exerciseSummary[exerciseName] = {
+                estimatedMax: set.estimatedMax,
+                estimatedMaxDate: set.date,
+                sets: [set]
+            }
             setExerciseSummary((exerciseSummary) => ({ ...exerciseSummary }));
         }
     }
@@ -99,26 +121,31 @@ const MyExercises: React.FC = () => {
         }
         try {
             const response = await addSet(liftBeingAdded)
+            console.log('just got response')
             if (response.status == 200) {
-
                 setSuccess(true);
+                console.log('adding set')
                 addSetToState(exerciseSummary, liftBeingAdded)
             }
         }
 
         catch (error) {
+            console.log('wtf is going on')
             console.error(error)
         }
     }
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setExerciseName(event.target.value);
     };
+
     return (
 
         <Container className={"px-0"}>
             <Row className="justify-content-start">
                 <Col md={2} className="text-start">
-                    <Button variant="primary" size={"lg"} onClick={() => {setShowForm(true)}}>Add lift</Button>
+                    <Button variant="primary" size={"lg"} onClick={() => {
+                        setShowForm(true)
+                    }}>Add Set</Button>
                 </Col>
                 <Col md={10} className="text-start">
                     {/* Success Alert */}
@@ -134,29 +161,56 @@ const MyExercises: React.FC = () => {
             </Row>
             <Row className="justify-content-start">
                 {exerciseSummary &&
-                    <Table striped bordered hover responsive>
+                    <Table striped bordered hover>
                         <thead>
                         <tr>
-                            <th>Exercise</th>
-                            <th>Estimated One rep Max</th>
-                            <th>Estimated One Rep Max Date</th>
-                            <th>Number of Sets</th>
+                            <th>Exercise Name</th>
+                            <th># of Sets</th>
+                            <th>Estimated Max</th>
+                            <th>Estimated Max Date</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {Object.entries(exerciseSummary).map(([exercise, summary]) => (
-                            <tr key={exercise}>
-                                <td>{exercise}</td>
-                                <td>{Math.round(summary.estimatedMax)}</td>
-                                <td>{new Date(summary.estimatedMaxDate).toLocaleDateString()}</td>
-                                <td>{summary.sets.length}</td>
-                            </tr>
+                        {Object.entries(exerciseSummary).map(([exerciseName, exercise]) => (
+                            <React.Fragment key={exerciseName}>
+                                <tr
+                                    className="clickable-row"
+                                    onClick={() => toggleRow(exerciseName)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <td>{exerciseName}</td>
+                                    <td>{exercise.sets.length}</td>
+                                    <td>{exercise.estimatedMax}</td>
+                                    <td>{new Date(exercise.estimatedMaxDate).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <td colSpan={4} style={{ padding: 0, border: 'none' }}>
+                                        <Collapse in={openRow === exerciseName}>
+                                            <Row>
+                                                <h1 style={{textAlign: "center"}}>Estimated one rep max in lbs over time for {exerciseName}</h1>
+                                                <Card.Body>
+                                                    <ResponsiveContainer width="100%" height={300}>
+                                                        <LineChart data={exercise.sets.slice().reverse().map(set => ({
+                                                            date: new Date(set.date).toLocaleDateString(),
+                                                            estimatedMax: set.estimatedMax || 0
+                                                        }))}>
+                                                            <CartesianGrid strokeDasharray="3 3" />
+                                                            <XAxis dataKey="date" />
+                                                            <YAxis />
+                                                            <Tooltip />
+                                                            <Line type="monotone" dataKey="estimatedMax" stroke="#8884d8" />
+                                                        </LineChart>
+                                                    </ResponsiveContainer>
+                                                </Card.Body>
+                                            </Row>
+                                        </Collapse>
+                                    </td>
+                                </tr>
+                            </React.Fragment>
                         ))}
                         </tbody>
                     </Table>
                 }
-
-
             </Row>
 
             <Modal show={showForm} onHide={() => setShowForm(false)} centered>
@@ -209,9 +263,8 @@ const MyExercises: React.FC = () => {
                 </Modal.Body>
             </Modal>
         </Container>
-)
+    )
 }
-
 
 
 export default MyExercises;

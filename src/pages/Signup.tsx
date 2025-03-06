@@ -98,7 +98,7 @@ const Signup: React.FC = () => {
                     {/* Success Alert */}
                     {success && (
                         <Alert variant="success">
-                            Form submitted successfully!
+                            User registered successfully!
                         </Alert>
                     )}
 

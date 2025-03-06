@@ -13,7 +13,11 @@ export const getUserExerciseSummary = async (userId: number) => {
         params: {userId}
     })
 }
-
 export function calculateMax(lift: Set): number {
-    return lift.weight * (1 + lift.reps / 30);
+    return lift.weight * (1 + (lift.reps - 1) / 30);
 }
+
+export const getHighscores = async () => {
+    return axios.get(`${API_URL}/sets/getHighscores`)
+}
+

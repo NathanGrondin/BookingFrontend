@@ -30,6 +30,7 @@ export interface Auth {
 
 export interface Set {
     id: number | undefined
+    estimatedMax?: number
     userid: number
     exerciseid: number
     reps: number
@@ -46,4 +47,16 @@ export interface UserExerciseSummary {
 export interface Exercise {
     id: number | undefined,
     name: string
+}
+
+export interface HighscoreRow {
+    exerciseName?: string,
+    username: string,
+    estimatedMax: number,
+    date: number,
+}
+export interface HighscoreData {
+    exerciseRows: HighscoreRow[]
+    userRow?: HighscoreRow,
+    userRank?: number
 }

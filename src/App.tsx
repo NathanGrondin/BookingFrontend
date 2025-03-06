@@ -51,7 +51,12 @@ const App: React.FC = () => {
                       </Route>
                       <Route path="/unauthorized" element={<Unauthorized/>} />
                       <Route path="/highscores" element={<Highscores/>}></Route>
-                      <Route path={"/members/mylifts"} element={<MyExercises/>}></Route>
+                      <Route path={"/members/mylifts"} element={
+                          <ProtectedRoute requiredRole={["guest", "admin"]}>
+                              <MyExercises/>
+                          </ProtectedRoute>
+                      }>
+                      </Route>
                   </Routes>
               </Col>
           </Row>
